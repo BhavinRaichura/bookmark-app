@@ -1,0 +1,28 @@
+---
+description: Bookmark app stack, structure, and conventions
+alwaysApply: true
+---
+
+# Project conventions
+
+## Stack
+
+- **Next.js** (App Router), **React**, **Supabase** (Auth + Database + Realtime).
+- Styling: **Tailwind CSS** v4. Use theme tokens from `globals.css` (e.g. `bg-background`, `text-foreground`, `border-border`, `accent`, `muted`, `card`).
+
+## Paths and structure
+
+- Use the **`@/`** alias for `src/` (e.g. `@/components/Logout`, `@/lib/supabase`).
+- **Reusable UI** lives in `src/components/`. Pages in `src/app/` compose them.
+- **Supabase client**: import from `@/lib/supabase` (single shared client).
+
+## Client vs server
+
+- Add **`"use client"`** at the top of any file that uses hooks, `onClick`, or browser APIs (e.g. `useState`, `useRouter`, `window`).
+- Route handlers and server components stay server (no `"use client"`).
+
+## UX and accessibility
+
+- **Cursors**: Use `cursor-pointer` on buttons and links, `cursor-text` on inputs, `cursor-not-allowed` on disabled buttons (no `pointer-events-none` on disabled so the cursor shows).
+- **Focus**: Rely on existing focus styles in `globals.css`; avoid removing outline without a visible focus alternative.
+- **Labels**: Use `aria-label` or associated `<label>` for form controls where the label isn’t visible.

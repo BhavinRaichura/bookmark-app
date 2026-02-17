@@ -1,0 +1,23 @@
+---
+description: React and Next.js component patterns for this app
+globs: src/**/*.js
+alwaysApply: false
+---
+
+# React and Next component patterns
+
+## Components
+
+- Keep **one clear responsibility** per component. Split large UI into smaller components in `src/components/`.
+- Prefer **controlled components** when the parent needs the value (e.g. form inputs with `value` + `onChange`).
+- Pass **callbacks** for actions (e.g. `onSubmit`, `onDelete`, `onGoogleLogin`) so the parent handles data and side effects.
+
+## Data and auth
+
+- **Supabase**: Call `supabase` from `@/lib/supabase`. Use `supabase.auth.getUser()` or session for auth; use `.from('bookmarks')` for data. Respect RLS (filter by `user_id` where needed in app logic; RLS enforces in DB).
+- **Realtime**: Subscribe in `useEffect`; return a cleanup that calls `supabase.removeChannel(channel)` to avoid leaks.
+
+## Next.js
+
+- **Navigation**: Use `useRouter()` from `next/navigation` for `router.push`, `router.replace`, `router.refresh`. Use `window.location.href` for full-page redirects after logout so all tabs refresh.
+- **Links**: Use `<a>` for external URLs (e.g. bookmark links); use `Link` from `next/link` for in-app routes when you need client-side navigation without full reload.
