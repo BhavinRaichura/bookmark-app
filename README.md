@@ -68,7 +68,20 @@ Bookmarks stay in sync across tabs and after add/delete without a manual refresh
 
 Ownership and access are enforced via RLS, not by client-side filtering.
 
+
+
+## Challenges
+
+### Syncing logout and login across tabs
+
+With multiple tabs open, auth state had to stay in sync:
+
+- **Logout in one tab** — The session lives in `localStorage`. Other tabs kept old in-memory state and didn’t redirect. **Fix:** Subscribe to `supabase.auth.onAuthStateChange()` and on `SIGNED_OUT` redirect with `window.location.href = "/"` so every tab does a full load and lands on the login screen.
+- **Login in another tab** — If the user had the login page in tab A and completed Google sign-in in tab B, tab A didn’t see the new session. **Fix:** On the login page, listen for the `storage` event. When another tab writes the new session to `localStorage`, this tab calls `getUser()` and, if a session exists, redirects to the dashboard.
+
+
 ---
+
 
 ## Getting started
 
@@ -79,15 +92,6 @@ npm run dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000). The app uses [Geist](https://vercel.com/font) via `next/font`.
-
-## Challenges
-
-### Syncing logout and login across tabs
-
-With multiple tabs open, auth state had to stay in sync:
-
-- **Logout in one tab** — The session lives in `localStorage`. Other tabs kept old in-memory state and didn’t redirect. **Fix:** Subscribe to `supabase.auth.onAuthStateChange()` and on `SIGNED_OUT` redirect with `window.location.href = "/"` so every tab does a full load and lands on the login screen.
-- **Login in another tab** — If the user had the login page in tab A and completed Google sign-in in tab B, tab A didn’t see the new session. **Fix:** On the login page, listen for the `storage` event. When another tab writes the new session to `localStorage`, this tab calls `getUser()` and, if a session exists, redirects to the dashboard.
 
 ## Learn more
 
