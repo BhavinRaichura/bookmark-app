@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { supabase } from "../../lib/supabase";
 import DashboardHeader from "@/components/DashboardHeader";
 import AddBookmarkForm from "@/components/AddBookmarkForm";
@@ -8,7 +9,9 @@ import BookmarkList from "@/components/BookmarkList";
 import LoadingSpinner from "@/components/LoadingSpinner";
 
 export default function Dashboard() {
+  const router = useRouter();
   const [user, setUser] = useState(null);
+  const [authChecked, setAuthChecked] = useState(false);
   const [bookmarks, setBookmarks] = useState([]);
   const [title, setTitle] = useState("");
   const [url, setUrl] = useState("");
@@ -25,8 +28,10 @@ export default function Dashboard() {
 
   useEffect(() => {
     supabase.auth.getUser().then((res) => {
-      setUser(res.data.user);
-      if (res.data.user) loadBookmarks(res.data.user.id);
+      const u = res.data.user;
+      setUser(u);
+      setAuthChecked(true);
+      if (u) loadBookmarks(u.id);
     });
   }, []);
 
@@ -82,7 +87,11 @@ export default function Dashboard() {
     loadBookmarks(user.id);
   };
 
-  if (!user) {
+  if (!authChecked || !user) {
+    if (authChecked && !user) {
+      router.replace("/");
+      return null;
+    }
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <LoadingSpinner />
